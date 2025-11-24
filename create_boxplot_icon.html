@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Box Plot Icon</title>
+</head>
+<body>
+    <h2>Box Plot Icon Generator</h2>
+    <canvas id="canvas" width="20" height="20" style="border:1px solid black; image-rendering: pixelated; width: 200px; height: 200px;"></canvas>
+    <br><br>
+    <button onclick="downloadIcon()">⬇️ Download icon.png</button>
+    
+    <script>
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        
+        // Fundo transparente
+        ctx.clearRect(0, 0, 20, 20);
+        
+        // Desenhar box plot simplificado
+        ctx.strokeStyle = '#4472C4';
+        ctx.lineWidth = 1;
+        
+        // Whisker superior
+        ctx.beginPath();
+        ctx.moveTo(10, 2);
+        ctx.lineTo(10, 5);
+        ctx.stroke();
+        
+        // Cap superior
+        ctx.beginPath();
+        ctx.moveTo(7, 2);
+        ctx.lineTo(13, 2);
+        ctx.stroke();
+        
+        // Box (retângulo)
+        ctx.fillStyle = '#4472C4';
+        ctx.fillRect(6, 5, 8, 8);
+        
+        // Mediana (linha vermelha)
+        ctx.strokeStyle = '#FF0000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(6, 9);
+        ctx.lineTo(14, 9);
+        ctx.stroke();
+        
+        // Whisker inferior
+        ctx.strokeStyle = '#4472C4';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(10, 13);
+        ctx.lineTo(10, 16);
+        ctx.stroke();
+        
+        // Cap inferior
+        ctx.beginPath();
+        ctx.moveTo(7, 16);
+        ctx.lineTo(13, 16);
+        ctx.stroke();
+        
+        // Outlier (ponto vermelho)
+        ctx.fillStyle = '#FF6B6B';
+        ctx.beginPath();
+        ctx.arc(10, 19, 1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        function downloadIcon() {
+            canvas.toBlob(function(blob) {
+                let link = document.createElement('a');
+                link.download = 'icon.png';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
