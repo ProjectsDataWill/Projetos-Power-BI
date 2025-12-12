@@ -259,25 +259,86 @@ Esta configuração mantém todas as informações estatísticas importantes enq
 
 ## 📝 Changelog
 
-### **v1.9.0** (Atual)
+### **v1.10.1** (Atual)
+- 🐛 **Corrigido:** Cor das linhas de grade não aplicava corretamente
+- 🔧 **Melhorado:** Renderização das linhas de grade para aceitar customização de cor
+
+### **v1.10.0**
+- ✨ **Adicionado:** Configurações de borda da box (largura e cor)
+- ✨ **Adicionado:** Seção Grid Settings completa
+  - Show/Hide grid lines
+  - Grid color customization
+  - Grid opacity control (0-1)
+  - Grid line width adjustment (0-5)
+- 🎨 **Melhorado:** Controle total sobre aparência das linhas de grade
+
+### **v1.9.0**
 - 🚀 **Aumentado limite para 500.000 linhas** de dados
-- 📊 Melhorias de performance para grandes volumes
-- 📚 Documentação expandida com guia de otimização
-- 🎨 Suporte a ícone personalizado
+- 🎨 **Suporte a ícone personalizado** (20x20 pixels)
+- ⚡ **Otimizações de performance** para grandes volumes
+- 📚 **Documentação expandida** com guia completo de uso
+- 📊 **Melhorias de performance** no algoritmo de processamento de dados
 
 ### v1.8.1
-- ✅ Suporte até 100.000 linhas de dados
-- 📚 Documentação completa
+- 🚀 Aumentado limite de dados para 100.000 linhas
+- 🔧 Otimizado `dataReductionAlgorithm` no capabilities.json
+- 📚 Documentação completa adicionada
 
 ### v1.8.0
 - ✨ Ordenação do eixo X (Default, Ascending, Descending)
 - 🎨 Margens otimizadas para máximo espaço de plotagem
-- 📐 Título removido
+- 📐 Título removido (mais área de plotagem)
+- 🔧 Margens reduzidas: `{ top: 30, right: 30, bottom: 60, left: 60 }`
 
 ### v1.7.0
 - ✨ Mean Settings completos com 5 formas de símbolo
+- 🎯 Formas disponíveis: Circle, Square, Diamond, Triangle, Cross
 - 🏷️ Labels da média com background opcional
-- 👁️ Show/hide títulos dos eixos
+- 👁️ Show/hide títulos dos eixos X e Y
+- 🎨 Controle completo de aparência da média
+
+### v1.6.0
+- ✨ Formatação completa dos eixos X e Y
+- 🎨 Controle de fontes, cores e ângulos dos labels
+- ✂️ Clipping de outliers ao range do eixo Y
+- 📐 Customização de títulos dos eixos
+
+### v1.5.0
+- ✨ Outlier Settings (tamanho, opacidade, borda)
+- 🎨 Outliers mais customizáveis
+- 📊 Melhor destaque visual de valores extremos
+
+### v1.4.0
+- ✨ Processamento de dados granulares
+- ✨ Suporte a campo "Detalhes" para valores individuais
+- 📊 Suporte até 10.000 linhas de dados
+- 🐛 Correção de erro "Nenhum dado válido"
+- 🔧 Melhor processamento de múltiplas categorias
+
+### v1.3.0
+- ✨ Focus on IQR (ignora outliers extremos na escala)
+- 📏 Range manual do eixo Y
+- 🎯 Melhor visualização de padrões principais
+
+### v1.2.0
+- ✨ Tooltips interativos detalhados
+- 📊 Informações completas ao passar o mouse
+- 🔍 Exibição de todas as estatísticas
+
+### v1.1.0
+- ✨ Múltiplos tipos de whisker
+  - 1.5 IQR (padrão estatístico)
+  - Min/Max (valores extremos)
+  - 5th/95th Percentile
+- 📊 Flexibilidade na análise estatística
+
+### v1.0.0
+- 🎉 Versão inicial do Interactive Box Plot
+- 📊 Estatísticas básicas (Q1, Q2, Q3, Min, Max)
+- 🎨 Cores personalizáveis
+- 📈 Visualização de outliers
+
+---
 
 **Histórico completo**: [Ver todas as versões](https://github.com/ProjectsDataWill/Projetos-Power-BI/releases)
 
