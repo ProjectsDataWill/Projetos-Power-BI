@@ -190,6 +190,35 @@
         "dataPointOpacity": {
           "displayName": "Data Point Opacity",
           "type": { "numeric": true }
+        },
+        "boxBorderWidth": {
+          "displayName": "Box Border Width",
+          "type": { "numeric": true }
+        },
+        "boxBorderColor": {
+          "displayName": "Box Border Color",
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
+    },
+    "gridSettings": {
+      "displayName": "Grid Settings",
+      "properties": {
+        "showGrid": {
+          "displayName": "Show Grid",
+          "type": { "bool": true }
+        },
+        "gridColor": {
+          "displayName": "Grid Color",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "gridOpacity": {
+          "displayName": "Grid Opacity",
+          "type": { "numeric": true }
+        },
+        "gridStrokeWidth": {
+          "displayName": "Grid Line Width",
+          "type": { "numeric": true }
         }
       }
     },

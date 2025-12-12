@@ -38,6 +38,8 @@ export class Visual implements IVisual {
             dataPointSize: 3,
             dataPointOpacity: 0.4,
             boxColor: "#4472C4",
+            boxBorderWidth: 2,
+            boxBorderColor: "#2a4a7c",
             medianColor: "#FF0000",
             meanColor: "#00DD00",
             outlierColor: "#FF6B6B",
@@ -67,6 +69,11 @@ export class Visual implements IVisual {
             yAxisTitle: "",
             yAxisTitleColor: "#333333",
             yAxisTitleFontSize: 13,
+            // Grid Settings
+            showGrid: true,
+            gridColor: "#E0E0E0",
+            gridOpacity: 0.3,
+            gridStrokeWidth: 1,
             // Mean Settings
             showMean: true,
             meanShape: "circle",
@@ -146,7 +153,6 @@ export class Visual implements IVisual {
             let yMin, yMax;
 
             if (this.settings.autoRange) {
-                // Auto: usar apenas os valores dentro do IQR se focusOnIQR estiver ativo
                 if (this.settings.focusOnIQR) {
                     const nonOutlierValues = sortedData.flatMap(d => 
                         d.values.filter(v => !d.outliers.includes(v))
@@ -159,13 +165,11 @@ export class Visual implements IVisual {
                         yMax = d3.max(sortedData.flatMap(d => d.values)) * 1.1;
                     }
                 } else {
-                    // Incluir todos os valores
                     const allValues = sortedData.flatMap(d => [...d.values, d.min, d.max]);
                     yMin = Math.max(0, d3.min(allValues) * 0.9);
                     yMax = d3.max(allValues) * 1.1;
                 }
             } else {
-                // Manual: usar os valores configurados
                 yMin = this.settings.rangeStart;
                 yMax = this.settings.rangeEnd;
             }
@@ -176,12 +180,23 @@ export class Visual implements IVisual {
                 .nice();
             
             // Grade
-            this.container.append("g")
-                .attr("class", "grid")
-                .call(d3.axisLeft(yScale).tickSize(-innerWidth).tickFormat(() => ""))
+            if (this.settings.showGrid) {
+                const gridGroup = this.container.append("g")
+                    .attr("class", "grid")
+                    .call(d3.axisLeft(yScale).tickSize(-innerWidth).tickFormat(() => ""));
+
+            // Aplicar estilos nas linhas de grade
+	    gridGroup.selectAll("line")
+	        .style("stroke", this.settings.gridColor)
                 .style("stroke-dasharray", "3,3")
-                .style("opacity", 0.3);
-            
+	        .style("opacity", this.settings.gridOpacity)
+	        .style("stroke-width", this.settings.gridStrokeWidth);
+
+	    // Remover o path do domínio (linha vertical do eixo)
+	    gridGroup.select(".domain").remove();
+	    }
+
+	
             // Eixo X
             if (this.settings.xAxisShow) {
                 this.container.append("g")
@@ -255,6 +270,12 @@ export class Visual implements IVisual {
             }
             if (objects.boxPlotSettings.dataPointOpacity) {
                 this.settings.dataPointOpacity = objects.boxPlotSettings.dataPointOpacity;
+            }
+            if (objects.boxPlotSettings.boxBorderWidth !== undefined) {
+                this.settings.boxBorderWidth = objects.boxPlotSettings.boxBorderWidth;
+            }
+            if (objects.boxPlotSettings.boxBorderColor) {
+                this.settings.boxBorderColor = objects.boxPlotSettings.boxBorderColor.solid.color;
             }
         }
         if (objects.colors) {
@@ -349,6 +370,20 @@ export class Visual implements IVisual {
                 this.settings.outlierStrokeWidth = objects.outlierSettings.outlierStrokeWidth;
             }
         }
+        if (objects.gridSettings) {
+            if (objects.gridSettings.showGrid !== undefined) {
+                this.settings.showGrid = objects.gridSettings.showGrid;
+            }
+            if (objects.gridSettings.gridColor) {
+                this.settings.gridColor = objects.gridSettings.gridColor.solid.color;
+            }
+            if (objects.gridSettings.gridOpacity !== undefined) {
+                this.settings.gridOpacity = objects.gridSettings.gridOpacity;
+            }
+            if (objects.gridSettings.gridStrokeWidth !== undefined) {
+                this.settings.gridStrokeWidth = objects.gridSettings.gridStrokeWidth;
+            }
+        }
         if (objects.meanSettings) {
             if (objects.meanSettings.showMean !== undefined) {
                 this.settings.showMean = objects.meanSettings.showMean;
@@ -399,7 +434,6 @@ export class Visual implements IVisual {
         const categories = categorical.categories;
         const values = categorical.values;
         
-        // Verificar se temos múltiplas categorias (com detalhes)
         const hasDetails = categories.length > 1;
         const mainCategory = categories[0];
         
@@ -413,7 +447,6 @@ export class Visual implements IVisual {
         
         const valueColumn = values[0].values;
         
-        // Processar dados
         for (let i = 0; i < mainCategory.values.length; i++) {
             const category = String(mainCategory.values[i] || "Sem categoria");
             const value = valueColumn[i];
@@ -433,9 +466,7 @@ export class Visual implements IVisual {
             
             const sorted = vals.sort((a, b) => a - b);
             
-            // Verificar se há valores suficientes
             if (sorted.length < 2) {
-                // Apenas um valor
                 result.push({
                     category: cat,
                     values: vals,
@@ -471,7 +502,7 @@ export class Visual implements IVisual {
                 max = sorted[sorted.length - 1];
                 lowerBound = min;
                 upperBound = max;
-            } else { // percentile
+            } else {
                 min = d3.quantile(sorted, 0.05);
                 max = d3.quantile(sorted, 0.95);
                 lowerBound = min;
@@ -507,21 +538,17 @@ export class Visual implements IVisual {
             
             const boxGroup = this.container.append("g");
             
-            // Verificar se há variação nos dados
             const hasVariation = d.q3 > d.q1;
             
-            // Organizar pontos por valor para evitar sobreposição (Beeswarm)
             if (this.settings.showDataPoints) {
                 const jitterWidth = boxWidth * 0.6;
                 
-                // Agrupar valores iguais
                 const valueGroups = new Map<number, number>();
                 d.values.forEach(value => {
                     const roundedValue = Math.round(value * 100) / 100;
                     valueGroups.set(roundedValue, (valueGroups.get(roundedValue) || 0) + 1);
                 });
                 
-                // Criar distribuição de pontos com espaçamento uniforme
                 const valueCounts = new Map<number, number>();
                 
                 d.values.forEach(value => {
@@ -554,7 +581,6 @@ export class Visual implements IVisual {
                 });
             }
             
-            // Se não há variação
             if (!hasVariation) {
                 boxGroup.append("line")
                     .attr("x1", centerX - boxWidth/2)
@@ -619,8 +645,8 @@ export class Visual implements IVisual {
                 .attr("height", boxHeight)
                 .attr("fill", this.settings.boxColor)
                 .attr("fill-opacity", 0.6)
-                .attr("stroke", "#2a4a7c")
-                .attr("stroke-width", 2)
+                .attr("stroke", this.settings.boxBorderColor)
+                .attr("stroke-width", this.settings.boxBorderWidth)
                 .style("cursor", "pointer");
             
             rect.on("mouseover", (event) => {
@@ -690,7 +716,6 @@ export class Visual implements IVisual {
     }
     
     private drawMeanSymbol(group: any, x: number, y: number, value: number) {
-        // Desenhar símbolo da média
         if (this.settings.meanShape === "circle") {
             group.append("circle")
                 .attr("cx", x)
@@ -745,7 +770,6 @@ export class Visual implements IVisual {
                 .attr("stroke-width", this.settings.meanStrokeWidth);
         }
         
-        // Desenhar label da média
         if (this.settings.showMeanLabel) {
             const labelY = y + 20;
             const labelText = value.toFixed(0);
@@ -881,7 +905,21 @@ export class Visual implements IVisual {
                         showOutliers: this.settings.showOutliers,
                         showDataPoints: this.settings.showDataPoints,
                         dataPointSize: this.settings.dataPointSize,
-                        dataPointOpacity: this.settings.dataPointOpacity
+                        dataPointOpacity: this.settings.dataPointOpacity,
+                        boxBorderWidth: this.settings.boxBorderWidth,
+                        boxBorderColor: { solid: { color: this.settings.boxBorderColor } }
+                    },
+                    selector: null
+                });
+                break;
+            case "gridSettings":
+                instances.push({
+                    objectName: "gridSettings",
+                    properties: {
+                        showGrid: this.settings.showGrid,
+                        gridColor: { solid: { color: this.settings.gridColor } },
+                        gridOpacity: this.settings.gridOpacity,
+                        gridStrokeWidth: this.settings.gridStrokeWidth
                     },
                     selector: null
                 });
@@ -955,6 +993,8 @@ interface BoxPlotSettings {
     dataPointSize: number;
     dataPointOpacity: number;
     boxColor: string;
+    boxBorderWidth: number;
+    boxBorderColor: string;
     medianColor: string;
     meanColor: string;
     outlierColor: string;
@@ -984,6 +1024,11 @@ interface BoxPlotSettings {
     yAxisTitle: string;
     yAxisTitleColor: string;
     yAxisTitleFontSize: number;
+    // Grid Settings
+    showGrid: boolean;
+    gridColor: string;
+    gridOpacity: number;
+    gridStrokeWidth: number;
     // Mean Settings
     showMean: boolean;
     meanShape: string;

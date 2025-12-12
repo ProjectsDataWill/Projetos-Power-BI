@@ -4,7 +4,7 @@
     "displayName": "Box Plot Interativo",
     "guid": "InteractiveBoxPlot94A8D5C3E2F14B9E",
     "visualClassName": "Visual",
-    "version": "1.9.0.0",
+    "version": "1.10.1.0",
     "description": "Box Plot interativo com tooltips",
     "supportUrl": "https://github.com",
     "gitHubUrl": "https://github.com"
